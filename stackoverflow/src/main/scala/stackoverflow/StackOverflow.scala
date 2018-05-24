@@ -108,15 +108,7 @@ class StackOverflow extends Serializable {
       highScore
     }
 
-    val highScores: RDD[(Question, HighScore)] =
-      grouped.map(groupedPostings => {
-        val posts = groupedPostings._2.toArray
-        val (questions: Array[Question], answers: Array[Answer]) = posts.unzip
-        val highScore = answerHighScore(answers)
-        (questions(0), highScore)
-      })
-
-    highScores
+    grouped.flatMap(_._2).groupByKey().mapValues(v => answerHighScore(v.toArray))
   }
 
 

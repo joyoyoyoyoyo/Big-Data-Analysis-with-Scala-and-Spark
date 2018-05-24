@@ -189,7 +189,24 @@ class StackOverflow extends Serializable {
   @tailrec final def kmeans(means: Array[(Int, Int)], vectors: RDD[(Int, Int)], iter: Int = 1, debug: Boolean = false): Array[(Int, Int)] = {
     val newMeans = means.clone() // you need to compute newMeans
 
-    // TODO: Fill in the newMeans array
+    // Assign data point to nearest (most similar) cluster k_i, where i = {0, 1, ..., K}, begin with randomMeans
+    // ---------------
+    // Index by cluster;
+    // Pairing each vector with the index of the closest mean (its cluster/centroid)
+    val clusters = vectors
+      .map(scorePostVector => (findClosest(scorePostVector, means), scorePostVector))
+      .groupByKey()
+
+    // Move Centroids;
+    // Computing the new means by averaging the scores of each cluster
+    val movedCentroids = clusters
+      .map(centroid => (centroid._1, averageVectors(centroid._2)))
+      .collect()
+
+    for((cluster, mean) <- movedCentroids)
+      newMeans.update(cluster, mean)
+
+
     val distance = euclideanDistance(means, newMeans)
 
     if (debug) {

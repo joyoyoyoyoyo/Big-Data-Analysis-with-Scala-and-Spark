@@ -1,5 +1,5 @@
 # Big Data Analysis with Scala and Spark
-[![Build Status](https://travis-ci.org/joyoyoyoyoyo/Big-Data-Analysis-with-Scala-and-Spark.svg?branch=master)](https://travis-ci.org/joyoyoyoyoyo/Big-Data-Analysis-with-Scala-and-Spark)
+[![Build Status](https://travis-ci.com/joyoyoyoyoyo/Big-Data-Analysis-with-Scala-and-Spark.svg?branch=master)](https://travis-ci.com/joyoyoyoyoyo/Big-Data-Analysis-with-Scala-and-Spark)
 
 ## Wikipedia
 1. Start a SparkContext (Setup SparkConfigs)

@@ -1,0 +1,13 @@
+language: scala
+
+jdk: 
+    - oraclejdk8
+
+scala:
+    - 2.11.12
+
+script:
+    - cd $TRAVIS_BUILD_DIR/stackoverflow
+    - sbt ++$TRAVIS_SCALA_VERSION test
+    - cd $TRAVIS_BUILD_DIR/wikipedia
+    - sbt ++$TRAVIS_SCALA_VERSION test

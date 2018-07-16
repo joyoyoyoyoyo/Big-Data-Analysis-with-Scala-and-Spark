@@ -88,13 +88,12 @@ class StackOverflow extends Serializable {
       .map(post => (post.parentId.getOrElse(post.id), post))
 
     val matchedQuestionAnswerPairs: RDD[(QID, (Question, Answer))] = questions.join(answers)
-    matchedQuestionAnswerPairs.groupByKey
+    matchedQuestionAnswerPairs.groupByKey()
   }
 
 
   /** Compute the maximum score for each posting */
   def scoredPostings(grouped: RDD[(QID, Iterable[(Question, Answer)])]): RDD[(Question, HighScore)] = {
-
 
     def answerHighScore(as: Array[Answer]): HighScore = {
       var highScore = 0
@@ -194,13 +193,14 @@ class StackOverflow extends Serializable {
     // Index by cluster;
     // Pairing each vector with the index of the closest mean (its cluster/centroid)
     val clusters = vectors
-      .map(scorePostVector => (findClosest(scorePostVector, means), scorePostVector))
-      .groupByKey()
+      .persist()
+      .map(point => (findClosest(point, means), point))
+      .groupByKey()  // points are assigned to an index cluster
 
     // Move Centroids;
     // Computing the new means by averaging the scores of each cluster
     val movedCentroids = clusters
-      .map(centroid => (centroid._1, averageVectors(centroid._2)))
+      .mapValues(centroid => averageVectors(centroid))
       .collect()
 
     for((cluster, mean) <- movedCentroids)

@@ -297,6 +297,7 @@ class StackOverflow extends Serializable {
 
 
 
+
   //
   //
   //  Displaying results:
@@ -307,20 +308,16 @@ class StackOverflow extends Serializable {
     val closestGrouped = closest.groupByKey()
 
     val median = closestGrouped.mapValues { vs =>
-      val langIdentity: LangIndex =
-        vs.map { case (lang, _) => lang }
-        .groupBy(identity)
-        .maxBy { case (_, langsVec ) => langsVec.size }._1
-
-      val langLabel: String = langs(langIdentity / langSpread) // most common language in the cluster
+      val langId: LangIndex = vs.map { case (lang, _) => lang }.groupBy(identity).maxBy { case (_, langsVec ) => langsVec.size }._1
+      val langLabel: String = langs(langId / langSpread) // most common language in the cluster
       val clusterSize: Int    = vs.size
-      val langPercent: Double = vs.groupBy(_._1 == langIdentity).size * 100d / clusterSize // percent of the questions in the most common language
+      val langPercent: Double = vs.groupBy(_._1 == langId).size * 100d / clusterSize // percent of the questions in the most common language
       val medianScore: Int    = {
         val scores = vs.map { case (_, highScore) => highScore }.toSeq
-        val sz = scores.length
-        val (bottom, top) = scores.sortBy(- _).splitAt(sz / 2)
-        val median = sz match {
-          case isEven if sz % 2 == 0 => bottom.last + top.head
+        val numScores = scores.length
+        val (bottom, top) = scores.sortBy(- _).splitAt(numScores / 2)
+        val median = numScores match {
+          case isEven if numScores % 2 == 0 => (bottom.last + top.head) / 2
           case isOdd => top.head
         }
         median
